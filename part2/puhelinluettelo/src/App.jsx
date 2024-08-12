@@ -1,58 +1,82 @@
 import { useState, useEffect } from "react";
 import { Persons, PersonForm, Filter } from "./components/Persons";
-import personService from './services/persons'
+import {
+  SuccessNotification,
+  ErrorNotification,
+} from "./components/Notification";
+import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
-    personService
-    .getAll()
-    .then(initialPersons => {
-      setPersons(initialPersons)
-    })
-  },[])
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
+  }, []);
 
   const addNote = (event) => {
     event.preventDefault();
 
-    const existingPerson = persons.find(person => person.name === newName);
+    const existingPerson = persons.find((person) => person.name === newName);
 
     if (existingPerson) {
-      const confirmUpdate = window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`);
+      const confirmUpdate = window.confirm(
+        `${newName} is already added to the phonebook, replace the old number with a new one?`
+      );
       if (!confirmUpdate) return;
 
       const updatedPerson = { ...existingPerson, number: newNumber };
       personService
         .update(existingPerson.id, updatedPerson)
-        .then(returnedPerson => {
-          setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson));
+        .then((returnedPerson) => {
+          setPersons(
+            persons.map((person) =>
+              person.id !== existingPerson.id ? person : returnedPerson
+            )
+          );
           setNewName("");
           setNewNumber("");
+          setSuccessMessage(`${returnedPerson.name} updated`);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 3000);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error updating person:", error);
+
+          setErrorMessage(
+            `Information of ${updatedPerson.name} has already been removed from the server`
+          );
+          setPersons(persons.filter((p) => p.id !== updatedPerson.id));
+
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 3000);
         });
       return;
     }
-    
 
     const nameObject = {
       name: newName,
       number: newNumber,
     };
 
-    personService
-    .create(nameObject)
-    .then(returnedPerson => {
-      setPersons(persons.concat(returnedPerson))
-      setNewName('')
+    personService.create(nameObject).then((returnedPerson) => {
+      setPersons(persons.concat(returnedPerson));
+      setNewName("");
       setNewNumber("");
-    })
-    
+
+      setSuccessMessage(`added ${returnedPerson.name} `);
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+    });
   };
 
   const handleNameChange = (event) => {
@@ -72,14 +96,18 @@ const App = () => {
       personService
         .remove(id)
         .then(() => {
-          setPersons(persons.filter(person => person.id !== id));
+          setPersons(persons.filter((person) => person.id !== id));
+
+          setSuccessMessage(`Person deleted`);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 3000);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error deleting person:", error);
         });
     }
   };
-
 
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().includes(newFilter.toLowerCase())
@@ -89,6 +117,8 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Filter newFilter={newFilter} handleFilterChange={handleFilterChange} />
+      <SuccessNotification message={successMessage} />
+      <ErrorNotification message={errorMessage} />
 
       <h1>add a new</h1>
       <PersonForm
