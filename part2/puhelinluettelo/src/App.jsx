@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { Persons, PersonForm, Filter } from "./components/Persons";
-import {
-  SuccessNotification,
-  ErrorNotification,
-} from "./components/Notification";
+import {SuccessNotification, ErrorNotification,} from "./components/Notification";
 import personService from "./services/persons";
 
 const App = () => {
