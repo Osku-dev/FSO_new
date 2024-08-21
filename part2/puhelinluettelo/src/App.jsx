@@ -64,17 +64,26 @@ const App = () => {
       number: newNumber,
     };
 
-    personService.create(nameObject).then((returnedPerson) => {
-      setPersons(persons.concat(returnedPerson));
-      setNewName("");
-      setNewNumber("");
+    personService
+  .create(nameObject)
+  .then((returnedPerson) => {
+    setPersons(persons.concat(returnedPerson));
+    setNewName("");
+    setNewNumber("");
 
-      setSuccessMessage(`added ${returnedPerson.name} `);
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
-    });
-  };
+    setSuccessMessage(`Added ${returnedPerson.name}`);
+    setTimeout(() => {
+      setSuccessMessage(null);
+    }, 3000);
+  })
+  .catch((error) => {
+    setErrorMessage(error.response.data.error);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 3000);
+  });
+
+  
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
