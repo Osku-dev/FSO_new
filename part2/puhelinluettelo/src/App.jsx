@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Persons, PersonForm, Filter } from "./components/Persons";
-import {SuccessNotification, ErrorNotification,} from "./components/Notification";
+import { SuccessNotification, ErrorNotification } from "./components/Notification";
 import personService from "./services/persons";
 
 const App = () => {
@@ -18,81 +18,80 @@ const App = () => {
   }, []);
 
   const addNote = (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  const existingPerson = persons.find((person) => person.name === newName);
+    const existingPerson = persons.find((person) => person.name === newName);
 
-  if (existingPerson) {
-    const confirmUpdate = window.confirm(
-      `${newName} is already added to the phonebook, replace the old number with a new one?`
-    );
-    if (!confirmUpdate) return;
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${newName} is already added to the phonebook, replace the old number with a new one?`
+      );
+      if (!confirmUpdate) return;
 
-    const updatedPerson = { ...existingPerson, number: newNumber };
+      const updatedPerson = { ...existingPerson, number: newNumber };
+      personService
+        .update(existingPerson.id, updatedPerson)
+        .then((returnedPerson) => {
+          setPersons(
+            persons.map((person) =>
+              person.id !== existingPerson.id ? person : returnedPerson
+            )
+          );
+          setSuccessMessage(`${returnedPerson.name} updated`);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000); // Changed to 5000ms
+        })
+        .catch((error) => {
+          console.error("Error updating person:", error);
+
+          if (error.response?.data?.error) {
+            setErrorMessage(error.response.data.error);
+          } else {
+            setErrorMessage(
+              `Information of ${updatedPerson.name} has already been removed from the server`
+            );
+            setPersons(persons.filter((p) => p.id !== updatedPerson.id));
+          }
+
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000); // Changed to 5000ms
+        });
+      return;
+    }
+
+    const nameObject = {
+      name: newName,
+      number: newNumber,
+    };
+
     personService
-      .update(existingPerson.id, updatedPerson)
+      .create(nameObject)
       .then((returnedPerson) => {
-        setPersons(
-          persons.map((person) =>
-            person.id !== existingPerson.id ? person : returnedPerson
-          )
-        );
-        setSuccessMessage(`${returnedPerson.name} updated`);
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+
+        setSuccessMessage(`Added ${returnedPerson.name}`);
         setTimeout(() => {
           setSuccessMessage(null);
-        }, 3000);
+        }, 5000); // Changed to 5000ms
       })
       .catch((error) => {
-        console.error("Error updating person:", error);
+        console.error("Error creating person:", error);
 
         if (error.response?.data?.error) {
           setErrorMessage(error.response.data.error);
         } else {
-          setErrorMessage(
-            `Information of ${updatedPerson.name} has already been removed from the server`
-          );
-          setPersons(persons.filter((p) => p.id !== updatedPerson.id));
+          setErrorMessage("Failed to add the person");
         }
 
         setTimeout(() => {
           setErrorMessage(null);
-        }, 3000);
+        }, 5000); // Changed to 5000ms
       });
-    return;
-  }
-
-  const nameObject = {
-    name: newName,
-    number: newNumber,
   };
-
-  personService
-    .create(nameObject)
-    .then((returnedPerson) => {
-      setPersons(persons.concat(returnedPerson));
-      setNewName("");
-      setNewNumber("");
-
-      setSuccessMessage(`Added ${returnedPerson.name}`);
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
-    })
-    .catch((error) => {
-      console.error("Error creating person:", error);
-
-      if (error.response?.data?.error) {
-        setErrorMessage(error.response.data.error);
-      } else {
-        setErrorMessage("Failed to add the person");
-      }
-
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 3000);
-    });
-};
-  
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -116,7 +115,7 @@ const App = () => {
           setSuccessMessage(`Person deleted`);
           setTimeout(() => {
             setSuccessMessage(null);
-          }, 3000);
+          }, 5000); // Changed to 5000ms
         })
         .catch((error) => {
           console.error("Error deleting person:", error);
