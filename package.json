@@ -7,7 +7,8 @@
     "axios": "^1.7.3"
   },
   "scripts": {
-   
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "server": "json-server -p3001 --watch db.json"
   }
 }
