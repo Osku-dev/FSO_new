@@ -54,6 +54,11 @@ const App = () => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [weather, setWeather] = useState(null);
 
+  const filteredCountries = countries.filter((country) =>
+    country.name.common.toLowerCase().includes(value.toLowerCase())
+  );
+
+
   useEffect(() => {
     axios
       .get(`https://studies.cs.helsinki.fi/restcountries/api/all`)
@@ -63,7 +68,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Weather API Key:', apiKey);
     if (selectedCountry) {
       axios
         .get(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${selectedCountry.capital}`)
@@ -80,20 +84,30 @@ const App = () => {
     }
   }, [selectedCountry]);
 
+  
+
   const handleChange = (event) => {
     setValue(event.target.value);
-    setSelectedCountry(null); // Reset selected country when the input changes
+
+    const filtered = countries.filter((country) =>
+      country.name.common.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+
+    if (filtered.length === 1) {
+      setSelectedCountry(filtered[0]);
+    } else {
+      setSelectedCountry(null);
+      setWeather(null); // Reset weather data when the input changes and doesn't narrow down to one country
+    }
   };
+
 
   const handleShowCountry = (country) => {
     setSelectedCountry(country);
     setWeather(null); // Reset weather data when a new country is selected
   };
 
-  const filteredCountries = countries.filter((country) =>
-    country.name.common.toLowerCase().includes(value.toLowerCase())
-  );
-
+  
   return (
     <div>
       <form>
