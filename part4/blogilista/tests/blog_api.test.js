@@ -56,6 +56,27 @@ test("a valid blog can be added ", async () => {
   assert(title.includes("testTitle"));
 });
 
+test("likes default to 0 if not provided", async () => {
+  const newBlog = {
+    title: "testTitleWithoutLikes",
+    author: "testAuthorWithoutLikes",
+    url: "urlWithoutLikes"
+  };
+
+  const response = await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  assert.strictEqual(response.body.likes, 0);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  const addedBlog = blogsAtEnd.find(blog => blog.title === newBlog.title);
+
+  assert.strictEqual(addedBlog.likes, 0);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
