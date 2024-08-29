@@ -77,6 +77,32 @@ test("likes default to 0 if not provided", async () => {
   assert.strictEqual(addedBlog.likes, 0);
 });
 
+test.only("blog without title or url returns 400 Bad Request", async () => {
+  const newBlogWithoutTitle = {
+    author: "testAuthor",
+    url: "url",
+    likes: 10,
+  };
+
+  const newBlogWithoutUrl = {
+    title: "testTitle",
+    author: "testAuthor",
+    likes: 10,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlogWithoutTitle)
+    .expect(400)
+    .expect("Content-Type", /application\/json/);
+
+  await api
+    .post("/api/blogs")
+    .send(newBlogWithoutUrl)
+    .expect(400)
+    .expect("Content-Type", /application\/json/);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
