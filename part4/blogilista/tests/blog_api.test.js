@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { test, after, beforeEach } = require("node:test");
+const { test, describe, after, beforeEach } = require("node:test");
 const Blog = require("../models/blog");
 const mongoose = require("mongoose");
 const supertest = require("supertest");
@@ -13,94 +13,97 @@ beforeEach(async () => {
   await Blog.insertMany(helper.initialBlogs);
 });
 
-test("two blogs are returned as json", async () => {
-  const response = await api
-    .get("/api/blogs")
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
+describe("GET /api/blogs", () => {
+  test("two blogs are returned as json", async () => {
+    const response = await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
 
-  assert.deepStrictEqual(response.body.length, 2);
+    assert.deepStrictEqual(response.body.length, 2);
+  });
+
+  test("id is id and not _id", async () => {
+    const response = await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+
+    const allBlogsHaveId = response.body.every((blog) => blog.id && !blog._id);
+
+    assert.deepStrictEqual(allBlogsHaveId, true);
+  });
 });
 
-test("id is id and not _id", async () => {
-  const response = await api
-    .get("/api/blogs")
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
+describe("POST /api/blogs", () => {
+  test("a valid blog can be added", async () => {
+    const newBlog = {
+      title: "testTitle",
+      author: "testAuthor",
+      url: "url",
+      likes: 10,
+    };
 
-  const allBlogsHaveId = response.body.every((blog) => blog.id && !blog._id);
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
 
-  assert.deepStrictEqual(allBlogsHaveId, true);
-});
+    const response = await api.get("/api/blogs");
 
-test("a valid blog can be added ", async () => {
-  const newBlog = {
-    title: "testTitle",
-    author: "testAuthor",
-    url: "url",
-    likes: 10,
-  };
+    const title = response.body.map((r) => r.title);
 
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
+    assert.strictEqual(response.body.length, 3);
+    assert(title.includes("testTitle"));
+  });
 
-  const response = await api.get("/api/blogs");
+  test("likes default to 0 if not provided", async () => {
+    const newBlog = {
+      title: "testTitleWithoutLikes",
+      author: "testAuthorWithoutLikes",
+      url: "urlWithoutLikes",
+    };
 
-  const title = response.body.map((r) => r.title);
+    const response = await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
 
-  assert.strictEqual(response.body.length, 3);
+    assert.strictEqual(response.body.likes, 0);
 
-  assert(title.includes("testTitle"));
-});
+    const blogsAtEnd = await helper.blogsInDb();
+    const addedBlog = blogsAtEnd.find((blog) => blog.title === newBlog.title);
 
-test("likes default to 0 if not provided", async () => {
-  const newBlog = {
-    title: "testTitleWithoutLikes",
-    author: "testAuthorWithoutLikes",
-    url: "urlWithoutLikes"
-  };
+    assert.strictEqual(addedBlog.likes, 0);
+  });
 
-  const response = await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
+  test("blog without title or url returns 400 Bad Request", async () => {
+    const newBlogWithoutTitle = {
+      author: "testAuthor",
+      url: "url",
+      likes: 10,
+    };
 
-  assert.strictEqual(response.body.likes, 0);
+    const newBlogWithoutUrl = {
+      title: "testTitle",
+      author: "testAuthor",
+      likes: 10,
+    };
 
-  const blogsAtEnd = await helper.blogsInDb();
-  const addedBlog = blogsAtEnd.find(blog => blog.title === newBlog.title);
+    await api
+      .post("/api/blogs")
+      .send(newBlogWithoutTitle)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
 
-  assert.strictEqual(addedBlog.likes, 0);
-});
-
-test.only("blog without title or url returns 400 Bad Request", async () => {
-  const newBlogWithoutTitle = {
-    author: "testAuthor",
-    url: "url",
-    likes: 10,
-  };
-
-  const newBlogWithoutUrl = {
-    title: "testTitle",
-    author: "testAuthor",
-    likes: 10,
-  };
-
-  await api
-    .post("/api/blogs")
-    .send(newBlogWithoutTitle)
-    .expect(400)
-    .expect("Content-Type", /application\/json/);
-
-  await api
-    .post("/api/blogs")
-    .send(newBlogWithoutUrl)
-    .expect(400)
-    .expect("Content-Type", /application\/json/);
+    await api
+      .post("/api/blogs")
+      .send(newBlogWithoutUrl)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+  });
 });
 
 after(async () => {
