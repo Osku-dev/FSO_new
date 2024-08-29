@@ -106,6 +106,22 @@ describe("POST /api/blogs", () => {
   });
 });
 
+describe("DELETE /api/blogs/:id", () => {
+  test("succeeds with status code 204 if id is valid", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
+
+    const ids = blogsAtEnd.map((blog) => blog.id);
+    assert(!ids.includes(blogToDelete.id));
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
