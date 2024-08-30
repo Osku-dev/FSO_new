@@ -122,6 +122,43 @@ describe("DELETE /api/blogs/:id", () => {
   });
 });
 
+describe.only("PUT /api/blogs/:id", () => {
+  test.only("succeeds in updating the likes field of a blog", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    const updatedLikes = {
+      likes: blogToUpdate.likes + 1,
+    };
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedLikes)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    const updatedBlog = blogsAtEnd.find(blog => blog.id === blogToUpdate.id);
+
+    assert.strictEqual(updatedBlog.likes, updatedLikes.likes);
+
+    assert.strictEqual(response.body.likes, updatedLikes.likes);
+  });
+
+  test("fails with status code 404 if the blog does not exist", async () => {
+    const nonExistingId = await helper.nonExistingId();
+
+    const updatedLikes = {
+      likes: 10,
+    };
+
+    await api
+      .put(`/api/blogs/${nonExistingId}`)
+      .send(updatedLikes)
+      .expect(404);
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
