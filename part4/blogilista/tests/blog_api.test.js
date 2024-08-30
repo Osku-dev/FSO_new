@@ -122,8 +122,8 @@ describe("DELETE /api/blogs/:id", () => {
   });
 });
 
-describe.only("PUT /api/blogs/:id", () => {
-  test.only("succeeds in updating the likes field of a blog", async () => {
+describe("PUT /api/blogs/:id", () => {
+  test("succeeds in updating the likes field of a blog", async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToUpdate = blogsAtStart[0];
 
