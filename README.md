@@ -7,4 +7,11 @@ This repository contains the code I’m developing for the **Full Stack Open** c
 
 - [**Part3-Persons-Backend Repository**](https://github.com/Osku-dev/part3-persons-backend): This repository includes backend code that also relates to the Full Stack Open course.
 
+
+<h1>**Note on Project State and Techniques (IMPORTANT):** </h1>
+
+It is important to understand that the projects in this repository are part of a learning course and are often left in an unfinished state. Throughout the course, various techniques and methodologies are introduced, and as a result, the projects may reflect a mix of different styles. For instance, you may notice that tests are initially written for one implementation but are not updated when the code style changes significantly. This is intentional, as the focus is on learning and experimenting with different approaches rather than delivering a polished final product.
+
+As such, some aspects of error handling and overall code quality may not meet professional standards. This is due to the course’s emphasis on exploring different concepts and techniques, rather than maintaining a consistent and complete implementation. Please keep in mind that these discrepancies are part of the learning process and do not necessarily reflect my personal skills or expertise outside of the course context. I am aware of these issues and appreciate your understanding of the educational nature of these projects.
+
 Thank you for visiting! Feel free to explore the code, and don’t hesitate to reach out if you have any questions.
