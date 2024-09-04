@@ -11,8 +11,8 @@ beforeEach(async () => {
   await User.deleteMany({});
 });
 
-describe.only("POST /api/users", () => {
-  test.only("should not allow creating a user with a short username", async () => {
+describe("POST /api/users", () => {
+  test("should not allow creating a user with a short username", async () => {
     const newUser = {
       username: "ab", // too short
       name: "Test User",
@@ -31,7 +31,7 @@ describe.only("POST /api/users", () => {
     );
   });
 
-  test.only("should not allow creating a user with a missing username", async () => {
+  test("should not allow creating a user with a missing username", async () => {
     const newUser = {
       username: "", // missing username
       name: "Test User",
@@ -50,7 +50,7 @@ describe.only("POST /api/users", () => {
     );
   });
 
-  test.only("should not allow creating a user with a short password", async () => {
+  test("should not allow creating a user with a short password", async () => {
     const newUser = {
       username: "validuser",
       name: "Test User",
@@ -69,7 +69,7 @@ describe.only("POST /api/users", () => {
     );
   });
 
-  test.only("should allow creating a user with valid details", async () => {
+  test("should allow creating a user with valid details", async () => {
     const newUser = {
       username: "validuser",
       name: "Test User",
