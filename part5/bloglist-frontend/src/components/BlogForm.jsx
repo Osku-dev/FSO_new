@@ -1,21 +1,21 @@
-import React from 'react';
-import { useState ,useImperativeHandle, forwardRef} from "react";
+import React from 'react'
+import { useState ,useImperativeHandle, forwardRef } from 'react'
 
 const BlogForm = forwardRef ((props, ref) => {
 
   const [newBlog, setNewBlog] = useState({
-    title: "",
-    author: "",
-    url: "",
-  });
+    title: '',
+    author: '',
+    url: '',
+  })
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setNewBlog({ ...newBlog, [name]: value });
-  };
+    const { name, value } = event.target
+    setNewBlog({ ...newBlog, [name]: value })
+  }
 
   const clearInputFields = () => {
-    setNewBlog({ title: "", author: "", url: "" });
+    setNewBlog({ title: '', author: '', url: '' })
   }
 
   useImperativeHandle(ref, () => {
@@ -61,7 +61,9 @@ const BlogForm = forwardRef ((props, ref) => {
         <button type="submit">Create</button>
       </form>
     </div>
-  );
-});
+  )
+})
 
-export default BlogForm;
+BlogForm.displayName = 'BlogForm'
+
+export default BlogForm
