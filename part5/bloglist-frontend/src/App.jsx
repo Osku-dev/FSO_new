@@ -161,7 +161,6 @@ const App = () => {
           {blogForm()}
 
           {blogs
-            //.filter((blog) => blog.user && blog.user.username === user.username)
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog key={blog.id} blog={blog} handleLike={handleLike} handleRemove={handleRemove} user={user} />
