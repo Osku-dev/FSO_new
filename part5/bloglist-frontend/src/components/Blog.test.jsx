@@ -99,7 +99,7 @@ describe('<BlogForm />', () => {
       title: event.target.elements.title.value,
       author: event.target.elements.author.value,
       url: event.target.elements.url.value,
-    };
+    }
 
     expect(newBlogData).toEqual({
       title: 'Test Blog Title',
