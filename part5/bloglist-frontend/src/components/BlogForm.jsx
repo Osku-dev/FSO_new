@@ -35,6 +35,7 @@ const BlogForm = forwardRef ((props, ref) => {
             name="title"
             value={newBlog.title}
             onChange={handleInputChange}
+            placeholder='Title'
             required
           />
         </div>
@@ -45,6 +46,7 @@ const BlogForm = forwardRef ((props, ref) => {
             name="author"
             value={newBlog.author}
             onChange={handleInputChange}
+            placeholder='Author'
             required
           />
         </div>
@@ -55,6 +57,7 @@ const BlogForm = forwardRef ((props, ref) => {
             name="url"
             value={newBlog.url}
             onChange={handleInputChange}
+            placeholder='Url'
             required
           />
         </div>
