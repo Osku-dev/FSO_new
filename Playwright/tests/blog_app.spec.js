@@ -24,4 +24,25 @@ describe('Blog app', () => {
     await expect(page.getByRole('button', { name: 'login' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'cancel' })).toBeVisible()
   })
+
+  test('Successful login with correct credentials', async ({ page }) => {
+    await page.getByPlaceholder('Username').fill('johndoe')
+    await page.getByPlaceholder('Password').fill('password123')
+
+    await page.getByRole('button', { name: 'login' }).click()
+
+    await expect(page.getByText('John Doe logged in')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Logout' })).toBeVisible()
+  })
+
+  test('Login fails with incorrect password', async ({ page }) => {
+    await page.getByPlaceholder('Username').fill('johndoe')
+    await page.getByPlaceholder('Password').fill('wrongpassword')
+
+    await page.getByRole('button', { name: 'login' }).click()
+
+    await expect(page.getByText('Incorrect username or password')).toBeVisible()
+
+    await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible()
+  })
 })
