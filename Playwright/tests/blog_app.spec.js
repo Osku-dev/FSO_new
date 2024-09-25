@@ -25,6 +25,7 @@ describe('Blog app', () => {
     await expect(page.getByRole('button', { name: 'cancel' })).toBeVisible()
   })
 
+describe('Login', () => {
   test('Successful login with correct credentials', async ({ page }) => {
     await page.getByPlaceholder('Username').fill('johndoe')
     await page.getByPlaceholder('Password').fill('password123')
@@ -45,4 +46,5 @@ describe('Blog app', () => {
 
     await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible()
   })
+})
 })
