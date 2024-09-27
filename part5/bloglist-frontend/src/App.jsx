@@ -92,7 +92,17 @@ const App = () => {
     const newBlog = blogFormRef.current.getNewBlog()
     try {
       const returnedBlog = await blogService.createBlog(newBlog)
-      setBlogs(blogs.concat(returnedBlog))
+
+      const updatedBlog = {
+        ...returnedBlog,
+        user: {
+          user: returnedBlog.user,
+          username: user.username
+        },
+      }
+      setBlogs((prevBlogs) =>
+        prevBlogs.concat(updatedBlog)
+      )
       blogFormRef.current.clearInputFields()
       displayMessage('New blog created successfully', 'success')
     } catch (exception) {
@@ -163,7 +173,13 @@ const App = () => {
           {blogs
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
-              <Blog key={blog.id} blog={blog} handleLike={handleLike} handleRemove={handleRemove} user={user} />
+              <Blog
+                key={blog.id}
+                blog={blog}
+                handleLike={handleLike}
+                handleRemove={handleRemove}
+                user={user}
+              />
             ))}
         </div>
       )}
