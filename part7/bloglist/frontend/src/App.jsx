@@ -7,19 +7,22 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './App.css'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotificationWithTimeout } from './reducers/notificationReducer'
+import {fetchBlogs, createBlog} from './reducers/blogReducer'
 
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  const blogs = useSelector((state) => state.blogs);
+  
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    dispatch(fetchBlogs())
   }, [])
 
   useEffect(() => {
@@ -30,6 +33,9 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  
+
 
   const loginForm = () => {
     return (
@@ -59,7 +65,7 @@ const App = () => {
     )
   }
 
-  const dispatch = useDispatch()
+  
 
 
   const handleLogin = async (event) => {
@@ -84,27 +90,17 @@ const App = () => {
   }
 
   const handleCreateBlog = async (event) => {
-    event.preventDefault()
-    const newBlog = blogFormRef.current.getNewBlog()
-    try {
-      const returnedBlog = await blogService.createBlog(newBlog)
-
-      const updatedBlog = {
-        ...returnedBlog,
-        user: {
-          user: returnedBlog.user,
-          username: user.username
-        },
-      }
-      setBlogs((prevBlogs) =>
-        prevBlogs.concat(updatedBlog)
-      )
-      blogFormRef.current.clearInputFields()
-      dispatch(setNotificationWithTimeout('New blog created successfully', 'success', 5))
-    } catch (exception) {
-      dispatch(setNotificationWithTimeout('Failed to create new blog', 'error', 5))
+    event.preventDefault();
+    const newBlog = blogFormRef.current.getNewBlog();
+  
+    const success = await dispatch(createBlog(newBlog, user.username));
+    if (success) {
+      dispatch(setNotificationWithTimeout("New blog created successfully", "success", 5));
+      blogFormRef.current.clearInputFields();
+    } else {
+      dispatch(setNotificationWithTimeout("Failed to create new blog", "error", 5));
     }
-  }
+  };
 
   const handleLike = async (id) => {
     try {
@@ -167,6 +163,7 @@ const App = () => {
           {blogForm()}
 
           {blogs
+          .slice()
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog
