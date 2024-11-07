@@ -1,4 +1,4 @@
-import js from '@eslint/js'
+/*import js from '@eslint/js'
 import globals from 'globals'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -7,7 +7,7 @@ import vitestGlobals from 'eslint-plugin-vitest-globals'
 
 export default [
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['**/ /**.{js,jsx}'],
     ignores: ['dist', 'eslint.config.js', 'node_modules', 'vite.config.js'], // Add ignored files/folders
     languageOptions: {
       ecmaVersion: 2020,
@@ -57,4 +57,4 @@ export default [
       'no-unused-vars': 'off',
     },
   },
-]
+]*/

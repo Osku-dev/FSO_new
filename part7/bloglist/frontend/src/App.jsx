@@ -3,9 +3,13 @@ import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './App.css'
+import { useDispatch } from 'react-redux'
+import { setNotificationWithTimeout } from './reducers/notificationReducer'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,8 +17,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const [message, setMessage] = useState(null)
-  const [messageType, setMessageType] = useState('') // 'success' or 'error'
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -57,14 +59,8 @@ const App = () => {
     )
   }
 
-  const displayMessage = (messageText, type) => {
-    setMessage(messageText)
-    setMessageType(type)
+  const dispatch = useDispatch()
 
-    setTimeout(() => {
-      setMessage(null)
-    }, 5000)
-  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -75,16 +71,16 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      displayMessage('Login successful', 'success')
+      dispatch(setNotificationWithTimeout('Login successful', 'success', 5))
     } catch (exception) {
-      displayMessage('Incorrect username or password', 'error')
+      dispatch(setNotificationWithTimeout('Incorrect username or password', 'error', 5))
     }
   }
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
-    displayMessage('Logged out successfully', 'success')
+    dispatch(setNotificationWithTimeout('Logged out successfully', 'success', 5))
   }
 
   const handleCreateBlog = async (event) => {
@@ -104,9 +100,9 @@ const App = () => {
         prevBlogs.concat(updatedBlog)
       )
       blogFormRef.current.clearInputFields()
-      displayMessage('New blog created successfully', 'success')
+      dispatch(setNotificationWithTimeout('New blog created successfully', 'success', 5))
     } catch (exception) {
-      displayMessage('Failed to create new blog', 'error')
+      dispatch(setNotificationWithTimeout('Failed to create new blog', 'error', 5))
     }
   }
 
@@ -147,17 +143,17 @@ const App = () => {
 
       setBlogs(blogs.filter((b) => b.id !== blog.id))
 
-      displayMessage('Blog deleted successfully', 'success')
+      dispatch(setNotificationWithTimeout('Blog deleted successfully', 'success', 5))
     } catch (exception) {
       console.error('Error deleting blog: ', exception)
-      displayMessage('Failed to delete blog', 'error')
+      dispatch(setNotificationWithTimeout('Failed to delete blog', 'error', 5))
     }
   }
 
   return (
     <div>
       <h1>Blogs</h1>
-      {message && <div className={`${messageType}`}>{message}</div>}
+      <Notification />
 
       {user === null ? (
         loginForm()
