@@ -9,7 +9,7 @@ import loginService from "./services/login";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotificationWithTimeout } from "./reducers/notificationReducer";
-import { fetchBlogs, createBlog } from "./reducers/blogReducer";
+import { fetchBlogs, createBlog, likeBlog, deleteBlog } from "./reducers/blogReducer";
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -107,51 +107,31 @@ const App = () => {
     }
   };
 
-  const handleLike = async (id) => {
-    try {
-      const blogToUpdate = blogs.find((b) => b.id === id);
+    const handleLike = async (id) => {
+      const success = await dispatch(likeBlog(id));
+    
+      if (!success) {
+        dispatch(
+          setNotificationWithTimeout("Error updating likes", "error", 5)
+        );
+      }
+    };
 
-      const updatedBlog = {
-        ...blogToUpdate,
-        likes: blogToUpdate.likes + 1,
-      };
-
-      const returnedBlog = await blogService.updateBlog(id, updatedBlog);
-
-      const updatedBlogWithUser = {
-        ...returnedBlog,
-        user: blogToUpdate.user,
-      };
-
-      setBlogs((prevBlogs) =>
-        prevBlogs.map((b) => (b.id !== id ? b : updatedBlogWithUser))
-      );
-    } catch (exception) {
-      console.error("Error updating likes: ", exception);
-    }
-  };
-
-  const handleRemove = async (blog) => {
-    try {
+    const handleRemove = async (blog) => {
       const confirmDelete = window.confirm(
         `Are you sure you want to delete the blog "${blog.title}" by ${blog.author}?`
       );
       if (!confirmDelete) {
         return;
       }
-
-      await blogService.deleteBlog(blog.id);
-
-      setBlogs(blogs.filter((b) => b.id !== blog.id));
-
-      dispatch(
-        setNotificationWithTimeout("Blog deleted successfully", "success", 5)
-      );
-    } catch (exception) {
-      console.error("Error deleting blog: ", exception);
-      dispatch(setNotificationWithTimeout("Failed to delete blog", "error", 5));
-    }
-  };
+    
+      const success = await dispatch(deleteBlog(blog.id));
+      if (success) {
+        dispatch(setNotificationWithTimeout("Blog deleted successfully", "success", 5));
+      } else {
+        dispatch(setNotificationWithTimeout("Failed to delete blog", "error", 5));
+      }
+    };
 
   return (
     <div>
