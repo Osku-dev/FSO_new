@@ -5,18 +5,18 @@ import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import Notification from "./components/Notification";
 import blogService from "./services/blogs";
-import loginService from "./services/login";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotificationWithTimeout } from "./reducers/notificationReducer";
 import { fetchBlogs, createBlog, likeBlog, deleteBlog } from "./reducers/blogReducer";
+import { loginUser, logoutUser, setUser } from "./reducers/userReducer";
 
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
 
   const blogs = useSelector((state) => state.blogs);
+  const user = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
 
@@ -28,10 +28,10 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch(setUser(user));
       blogService.setToken(user.token);
     }
-  }, []);
+  }, []); 
 
   const loginForm = () => {
     return (
@@ -64,26 +64,22 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const user = await loginService.login({ username, password });
-      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-      setUsername("");
-      setPassword("");
-      dispatch(setNotificationWithTimeout("Login successful", "success", 5));
+      const success = await dispatch(loginUser({ username, password }));
+      if (success) {
+        dispatch(setNotificationWithTimeout("Login successful", "success", 5)); 
+        setUsername("");
+        setPassword("");
+      } else {
+        dispatch(setNotificationWithTimeout("Incorrect username or password", "error", 5));
+      }
     } catch (exception) {
-      dispatch(
-        setNotificationWithTimeout("Incorrect username or password", "error", 5)
-      );
+      dispatch(setNotificationWithTimeout("Login failed", "error", 5));
     }
   };
-
+  
   const handleLogout = () => {
-    window.localStorage.removeItem("loggedBlogappUser");
-    setUser(null);
-    dispatch(
-      setNotificationWithTimeout("Logged out successfully", "success", 5)
-    );
+    dispatch(logoutUser());
+    dispatch(setNotificationWithTimeout("Logged out successfully", "success", 5));
   };
 
   const handleCreateBlog = async (event) => {

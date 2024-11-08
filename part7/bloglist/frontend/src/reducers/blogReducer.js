@@ -33,14 +33,18 @@ export const likeBlog = (id) => async (dispatch, getState) => {
   try {
     const blogToUpdate = getState().blogs.find((blog) => blog.id === id);
     const updatedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 1 };
-    const returnedBlog = await blogService.updateBlog(id, updatedBlog);
+
+    
 
     const updatedBlogWithUser = {
-      ...returnedBlog,
+      ...updatedBlog,
       user: blogToUpdate.user,
     };
 
-    dispatch(updateBlog(updatedBlogWithUser));
+    const returnedBlog = await blogService.updateBlog(id, updatedBlogWithUser);
+
+
+    dispatch(updateBlog(returnedBlog));
     return true; 
   } catch (exception) {
     console.error("Error updating likes: ", exception);
