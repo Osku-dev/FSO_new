@@ -32,23 +32,24 @@ export const fetchBlogs = () => {
 export const likeBlog = (id) => async (dispatch, getState) => {
   try {
     const blogToUpdate = getState().blogs.find((blog) => blog.id === id);
-    const updatedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 1 };
-
     
+    const updatedBlogData = {
+      ...blogToUpdate,
+      likes: blogToUpdate.likes + 1,
+    };
+    
+    const returnedBlog = await blogService.updateBlog(id, updatedBlogData);
 
     const updatedBlogWithUser = {
-      ...updatedBlog,
-      user: blogToUpdate.user,
+      ...returnedBlog,
+      user: blogToUpdate.user, 
     };
 
-    const returnedBlog = await blogService.updateBlog(id, updatedBlogWithUser);
-
-
-    dispatch(updateBlog(returnedBlog));
-    return true; 
+    dispatch(updateBlog(updatedBlogWithUser));
+    return true;
   } catch (exception) {
     console.error("Error updating likes: ", exception);
-    return false; 
+    return false;
   }
 };
 
@@ -63,25 +64,26 @@ export const deleteBlog = (id) => async (dispatch) => {
   }
 };
 
-export const createBlog = (blog, username) => {
-  return async (dispatch) => {
-    try {
-      const newBlog = await blogService.createBlog(blog);
-      const updatedBlog = {
-        ...newBlog,
-        user: {
-          ...newBlog.user,
-          username: username,
-        },
-      };
+export const createBlog = (newBlogData) => async (dispatch, getState) => {
+  try {
+    const currentUser = getState().user;
+    const returnedBlog = await blogService.createBlog(newBlogData);
 
-      dispatch(addBlog(updatedBlog));
-      return true;
-    } catch (error) {
-      console.error("Failed to create blog:", error);
-      return false;
-    }
-  };
+    const returnedBlogWithUser = {
+      ...returnedBlog,
+      user: {
+        username: currentUser.username,
+        name: currentUser.name,
+        id: currentUser.id
+      },
+    };
+
+    dispatch(addBlog(returnedBlogWithUser));
+    return true;
+  } catch (exception) {
+    console.error("Error creating new blog: ", exception);
+    return false;
+  }
 };
 
 export const { setBlogs, addBlog, updateBlog, removeBlog } = blogSlice.actions;

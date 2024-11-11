@@ -86,7 +86,7 @@ const App = () => {
     event.preventDefault();
     const newBlog = blogFormRef.current.getNewBlog();
 
-    const success = await dispatch(createBlog(newBlog, user.username));
+    const success = await dispatch(createBlog(newBlog));
     if (success) {
       dispatch(
         setNotificationWithTimeout(
