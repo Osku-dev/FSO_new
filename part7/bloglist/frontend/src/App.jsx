@@ -13,8 +13,9 @@ import { fetchBlogs, createBlog, likeBlog, deleteBlog } from "./reducers/blogRed
 import { loginUser, logoutUser, setUser } from "./reducers/userReducer";
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes, Route
 } from 'react-router-dom'
+import UserDetails from "./components/UserDetails";
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -138,6 +139,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path ="/users" element={<Users/>}/>
+        <Route path="/users/:id" element={<UserDetails />} />
         <Route path ="/" element={<div>
       <h1>Blogs</h1>
       <Notification />
