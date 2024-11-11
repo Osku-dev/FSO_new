@@ -4,12 +4,17 @@ import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import Notification from "./components/Notification";
+import Users from "./components/Users";
 import blogService from "./services/blogs";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotificationWithTimeout } from "./reducers/notificationReducer";
 import { fetchBlogs, createBlog, likeBlog, deleteBlog } from "./reducers/blogReducer";
 import { loginUser, logoutUser, setUser } from "./reducers/userReducer";
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from 'react-router-dom'
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -130,7 +135,10 @@ const App = () => {
     };
 
   return (
-    <div>
+    <Router>
+      <Routes>
+        <Route path ="/users" element={<Users/>}/>
+        <Route path ="/" element={<div>
       <h1>Blogs</h1>
       <Notification />
 
@@ -159,7 +167,9 @@ const App = () => {
             ))}
         </div>
       )}
-    </div>
+    </div>}/>
+      </Routes>
+    </Router>
   );
 };
 
