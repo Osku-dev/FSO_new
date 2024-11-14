@@ -5,16 +5,24 @@ import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import Notification from "./components/Notification";
 import Users from "./components/Users";
+import BlogDetails from "./components/BlogDetails";
 import blogService from "./services/blogs";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotificationWithTimeout } from "./reducers/notificationReducer";
-import { fetchBlogs, createBlog, likeBlog, deleteBlog } from "./reducers/blogReducer";
+import {
+  fetchBlogs,
+  createBlog,
+  likeBlog,
+  deleteBlog,
+} from "./reducers/blogReducer";
 import { loginUser, logoutUser, setUser } from "./reducers/userReducer";
 import {
   BrowserRouter as Router,
-  Routes, Route
-} from 'react-router-dom'
+  Routes,
+  Route,
+  Outlet,
+} from "react-router-dom";
 import UserDetails from "./components/UserDetails";
 
 const App = () => {
@@ -37,7 +45,7 @@ const App = () => {
       dispatch(setUser(user));
       blogService.setToken(user.token);
     }
-  }, []); 
+  }, []);
 
   const loginForm = () => {
     return (
@@ -72,20 +80,28 @@ const App = () => {
     try {
       const success = await dispatch(loginUser({ username, password }));
       if (success) {
-        dispatch(setNotificationWithTimeout("Login successful", "success", 5)); 
+        dispatch(setNotificationWithTimeout("Login successful", "success", 5));
         setUsername("");
         setPassword("");
       } else {
-        dispatch(setNotificationWithTimeout("Incorrect username or password", "error", 5));
+        dispatch(
+          setNotificationWithTimeout(
+            "Incorrect username or password",
+            "error",
+            5
+          )
+        );
       }
     } catch (exception) {
       dispatch(setNotificationWithTimeout("Login failed", "error", 5));
     }
   };
-  
+
   const handleLogout = () => {
     dispatch(logoutUser());
-    dispatch(setNotificationWithTimeout("Logged out successfully", "success", 5));
+    dispatch(
+      setNotificationWithTimeout("Logged out successfully", "success", 5)
+    );
   };
 
   const handleCreateBlog = async (event) => {
@@ -109,67 +125,80 @@ const App = () => {
     }
   };
 
-    const handleLike = async (id) => {
-      const success = await dispatch(likeBlog(id));
-    
-      if (!success) {
-        dispatch(
-          setNotificationWithTimeout("Error updating likes", "error", 5)
-        );
-      }
-    };
+  const handleLike = async (id) => {
+    const success = await dispatch(likeBlog(id));
 
-    const handleRemove = async (blog) => {
-      const confirmDelete = window.confirm(
-        `Are you sure you want to delete the blog "${blog.title}" by ${blog.author}?`
+    if (!success) {
+      dispatch(setNotificationWithTimeout("Error updating likes", "error", 5));
+    }
+  };
+
+  const handleRemove = async (blog) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the blog "${blog.title}" by ${blog.author}?`
+    );
+    if (!confirmDelete) {
+      return;
+    }
+
+    const success = await dispatch(deleteBlog(blog.id));
+    if (success) {
+      dispatch(
+        setNotificationWithTimeout("Blog deleted successfully", "success", 5)
       );
-      if (!confirmDelete) {
-        return;
-      }
-    
-      const success = await dispatch(deleteBlog(blog.id));
-      if (success) {
-        dispatch(setNotificationWithTimeout("Blog deleted successfully", "success", 5));
-      } else {
-        dispatch(setNotificationWithTimeout("Failed to delete blog", "error", 5));
-      }
-    };
+    } else {
+      dispatch(setNotificationWithTimeout("Failed to delete blog", "error", 5));
+    }
+  };
 
   return (
     <Router>
       <Routes>
-        <Route path ="/users" element={<Users/>}/>
-        <Route path="/users/:id" element={<UserDetails />} />
-        <Route path ="/" element={<div>
-      <h1>Blogs</h1>
-      <Notification />
-
-      {user === null ? (
-        loginForm()
-      ) : (
-        <div>
-          <h2>
-            {user.name} logged in
-            <button onClick={handleLogout}>Logout</button>
-          </h2>
-
-          {blogForm()}
-
-          {blogs
-            .slice()
-            .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
+        <Route
+          element={
+            <>
+              <h1>Blogs</h1>
+              <Notification />
+              {user ? (
+                <h2>
+                  {user.name} logged in
+                  <button onClick={handleLogout}>Logout</button>
+                </h2>
+              ) : (
+                loginForm()
+              )}
+              <Outlet />
+            </>
+          }
+        >
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<UserDetails />} />
+          <Route
+            path="/blogs/:id"
+            element={
+              <BlogDetails
                 handleLike={handleLike}
                 handleRemove={handleRemove}
                 user={user}
               />
-            ))}
-        </div>
-      )}
-    </div>}/>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <div>
+                {user ? (blogForm()) : (<></>) }
+                
+                {blogs
+                  .slice()
+                  .sort((a, b) => b.likes - a.likes)
+                  .map((blog) => (
+                    <Blog key={blog.id} blog={blog} />
+                  ))}
+              </div>
+            }
+          />
+        </Route>
       </Routes>
     </Router>
   );
