@@ -5,6 +5,7 @@ import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import Notification from "./components/Notification";
 import Users from "./components/Users";
+import Header from "./components/Header";
 import BlogDetails from "./components/BlogDetails";
 import blogService from "./services/blogs";
 import "./App.css";
@@ -157,16 +158,9 @@ const App = () => {
         <Route
           element={
             <>
+            <Header user={user} handleLogout={handleLogout} loginForm={loginForm} />
               <h1>Blogs</h1>
               <Notification />
-              {user ? (
-                <h2>
-                  {user.name} logged in
-                  <button onClick={handleLogout}>Logout</button>
-                </h2>
-              ) : (
-                loginForm()
-              )}
               <Outlet />
             </>
           }
