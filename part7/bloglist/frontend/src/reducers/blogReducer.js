@@ -86,5 +86,24 @@ export const createBlog = (newBlogData) => async (dispatch, getState) => {
   }
 };
 
+export const addComment = (id, comment) => async (dispatch, getState) => {
+  try {
+    const blogToUpdate = getState().blogs.find((blog) => blog.id === id);
+
+    const updatedBlog = await blogService.addComment(id, comment);
+
+    const updatedBlogWithCorrectUser = {
+      ...updatedBlog,
+      user: blogToUpdate.user
+    };
+
+    dispatch(updateBlog(updatedBlogWithCorrectUser));
+    return true;
+  } catch (exception) {
+    console.error("Error adding comment: ", exception);
+    return false;
+  }
+};
+
 export const { setBlogs, addBlog, updateBlog, removeBlog } = blogSlice.actions;
 export default blogSlice.reducer;

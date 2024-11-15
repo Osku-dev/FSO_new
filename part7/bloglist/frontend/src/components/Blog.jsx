@@ -15,7 +15,7 @@ const Blog = ({ blog, handleLike, handleRemove, user }) => {
     <div style={blogStyle} className="blog">
       <div>
         <p>
-        <Link to={`/blogs/${blog.id}`}>{blog.title}{blog.title} {blog.author}</Link>
+        <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
           </p>
     </div>
     </div>

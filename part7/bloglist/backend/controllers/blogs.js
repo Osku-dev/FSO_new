@@ -75,4 +75,28 @@ blogsRouter.put("/:id", async (request, response) => {
   }
 });
 
+blogsRouter.post("/:id/comments", async (req, res) => {
+  const { id } = req.params; 
+  const { comment } = req.body; 
+
+  if (!comment || comment.trim() === '') {
+    return res.status(400).json({ error: 'Comment content is required' });
+  }
+
+  try {
+    const blog = await Blog.findById(id);
+
+    if (!blog) {
+      return res.status(404).json({ error: 'Blog not found' });
+    }
+
+    blog.comments = blog.comments.concat(comment);
+    await blog.save();
+
+    res.status(201).json(blog);
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
 module.exports = blogsRouter;
