@@ -1,72 +1,78 @@
-import React from 'react'
-import { useState ,useImperativeHandle, forwardRef } from 'react'
+import React, { useState, useImperativeHandle, forwardRef } from 'react';
+import { Form, Button } from 'react-bootstrap';
 
-const BlogForm = forwardRef ((props, ref) => {
-
+const BlogForm = forwardRef((props, ref) => {
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
     url: '',
-  })
+  });
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target
-    setNewBlog({ ...newBlog, [name]: value })
-  }
+    const { name, value } = event.target;
+    setNewBlog({ ...newBlog, [name]: value });
+  };
 
   const clearInputFields = () => {
-    setNewBlog({ title: '', author: '', url: '' })
-  }
+    setNewBlog({ title: '', author: '', url: '' });
+  };
 
   useImperativeHandle(ref, () => {
     return {
       clearInputFields,
-      getNewBlog: () => newBlog
-    }
-  })
+      getNewBlog: () => newBlog,
+    };
+  });
+
   return (
     <div>
       <h2>Create New</h2>
-      <form onSubmit={props.handleCreateBlog}>
-        <div>
-          Title:
-          <input
+
+      <Form onSubmit={props.handleCreateBlog}>
+        <Form.Group controlId="formTitle">
+          <Form.Label>Title</Form.Label>
+          <Form.Control
             type="text"
             name="title"
             value={newBlog.title}
             onChange={handleInputChange}
-            placeholder='Title'
+            placeholder="Title"
             required
           />
-        </div>
-        <div>
-          Author:
-          <input
+        </Form.Group>
+
+        <Form.Group controlId="formAuthor">
+          <Form.Label>Author</Form.Label>
+          <Form.Control
             type="text"
             name="author"
             value={newBlog.author}
             onChange={handleInputChange}
-            placeholder='Author'
+            placeholder="Author"
             required
           />
-        </div>
-        <div>
-          URL:
-          <input
+        </Form.Group>
+
+        <Form.Group controlId="formUrl">
+          <Form.Label>URL</Form.Label>
+          <Form.Control
             type="text"
             name="url"
             value={newBlog.url}
             onChange={handleInputChange}
-            placeholder='Url'
+            placeholder="URL"
             required
           />
-        </div>
-        <button type="submit">Create</button>
-      </form>
+        </Form.Group>
+
+        <Button variant="primary" type="submit" className="mt-3">
+          Create
+        </Button>
+      </Form>
     </div>
-  )
-})
+  );
+});
 
-BlogForm.displayName = 'BlogForm'
+BlogForm.displayName = 'BlogForm';
 
-export default BlogForm
+export default BlogForm;

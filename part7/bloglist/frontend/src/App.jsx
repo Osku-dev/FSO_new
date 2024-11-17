@@ -25,6 +25,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import UserDetails from "./components/UserDetails";
+import { Table } from "react-bootstrap";
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -88,13 +89,13 @@ const App = () => {
         dispatch(
           setNotificationWithTimeout(
             "Incorrect username or password",
-            "error",
+            "danger",
             5
           )
         );
       }
     } catch (exception) {
-      dispatch(setNotificationWithTimeout("Login failed", "error", 5));
+      dispatch(setNotificationWithTimeout("Login failed", "danger", 5));
     }
   };
 
@@ -121,7 +122,7 @@ const App = () => {
       blogFormRef.current.clearInputFields();
     } else {
       dispatch(
-        setNotificationWithTimeout("Failed to create new blog", "error", 5)
+        setNotificationWithTimeout("Failed to create new blog", "danger", 5)
       );
     }
   };
@@ -130,7 +131,7 @@ const App = () => {
     const success = await dispatch(likeBlog(id));
 
     if (!success) {
-      dispatch(setNotificationWithTimeout("Error updating likes", "error", 5));
+      dispatch(setNotificationWithTimeout("Error updating likes", "danger", 5));
     }
   };
 
@@ -148,53 +149,66 @@ const App = () => {
         setNotificationWithTimeout("Blog deleted successfully", "success", 5)
       );
     } else {
-      dispatch(setNotificationWithTimeout("Failed to delete blog", "error", 5));
+      dispatch(setNotificationWithTimeout("Failed to delete blog", "danger", 5));
     }
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route
-          element={
-            <>
-            <Header user={user} handleLogout={handleLogout} loginForm={loginForm} />
-              <h1>Blogs</h1>
-              <Notification />
-              <Outlet />
-            </>
-          }
-        >
-          <Route path="/users" element={<Users />} />
-          <Route path="/users/:id" element={<UserDetails />} />
+    <div className="container">
+      <Router>
+        <Routes>
           <Route
-            path="/blogs/:id"
             element={
-              <BlogDetails
-                handleLike={handleLike}
-                handleRemove={handleRemove}
-                user={user}
-              />
+              <>
+                <Header
+                  user={user}
+                  handleLogout={handleLogout}
+                  loginForm={loginForm}
+                />
+                <h1>Blogs</h1>
+                <Notification />
+                <Outlet />
+              </>
             }
-          />
-          <Route
-            path="/"
-            element={
-              <div>
-                {user ? (blogForm()) : (<></>) }
-                
-                {blogs
-                  .slice()
-                  .sort((a, b) => b.likes - a.likes)
-                  .map((blog) => (
-                    <Blog key={blog.id} blog={blog} />
-                  ))}
-              </div>
-            }
-          />
-        </Route>
-      </Routes>
-    </Router>
+          >
+            <Route path="/users" element={<Users />} />
+            <Route path="/users/:id" element={<UserDetails />} />
+            <Route
+              path="/blogs/:id"
+              element={
+                <BlogDetails
+                  handleLike={handleLike}
+                  handleRemove={handleRemove}
+                  user={user}
+                />
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <div>
+                  {user ? blogForm() : <></>}
+                  <Table striped>
+                    <tbody>
+                      {blogs
+                        .slice()
+                        .sort((a, b) => b.likes - a.likes)
+                        .map((blog) => (
+                          <tr key={blog.id}>
+                            <td colSpan="3">
+                              <Blog blog={blog} />
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </Table>
+                </div>
+              }
+            />
+          </Route>
+        </Routes>
+      </Router>
+    </div>
   );
 };
 

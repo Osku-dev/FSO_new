@@ -1,21 +1,33 @@
 import { Link } from 'react-router-dom';
+import { Navbar, Nav, Button } from 'react-bootstrap';
 
 const Header = ({ user, handleLogout, loginForm }) => (
-  <div style={{ backgroundColor: '#D3D3D3', padding: '10px' }}>
-    <div style={{ marginBottom: '10px' }}>
-      <Link to="/" style={{ marginRight: '15px' }}>Blogs</Link>
-      <Link to="/users" style={{ marginRight: '15px' }}>Users</Link>
-    </div>
+  <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+    <Navbar.Collapse id="responsive-navbar-nav">
+      <Nav className="mr-auto">
+        <Nav.Link as="span">
+          <Link to="/" style={{ color: 'white', marginRight: '15px' }}>Blogs</Link>
+        </Nav.Link>
+        <Nav.Link as="span">
+          <Link to="/users" style={{ color: 'white', marginRight: '15px' }}>Users</Link>
+        </Nav.Link>
+      </Nav>
 
-    {user ? (
-      <h2>
-        {user.name} logged in
-        <button onClick={handleLogout}>Logout</button>
-      </h2>
-    ) : (
-      loginForm()
-    )}
-  </div>
+      <Nav>
+        {user ? (
+          <Nav.Link as="span" style={{ color: 'white' }}>
+            <em>{user.name} logged in</em>
+            <Button onClick={handleLogout} variant="outline-light" style={{ marginLeft: '10px' }}>Logout</Button>
+          </Nav.Link>
+        ) : (
+          <Nav.Link as="span" style={{ color: 'white' }}>
+            {loginForm()}
+          </Nav.Link>
+        )}
+      </Nav>
+    </Navbar.Collapse>
+  </Navbar>
 );
 
 export default Header;
