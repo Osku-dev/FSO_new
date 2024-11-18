@@ -110,6 +110,10 @@ type Author {
     published: Int!
     genres: [String!]!
   ): Book!
+
+  editAuthor(
+    name: String!, setBornTo: Int!
+  ): Author
 }
 `;
 
@@ -166,6 +170,20 @@ const resolvers = {
 
       return newBook;
     },
+    editAuthor: (root, args) => {
+      const { name, setBornTo } = args;
+    
+      let existingAuthor = authors.find(a => a.name === name);
+    
+      if (!existingAuthor) {
+        return null;
+      }
+    
+      existingAuthor = { ...existingAuthor, born: setBornTo };
+      authors = authors.map(a => (a.name === name ? existingAuthor : a));
+    
+      return existingAuthor;
+    }
   }
 };
 
