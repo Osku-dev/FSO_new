@@ -1,25 +1,25 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
-const { v4: uuid } = require('uuid');
+const mongoose = require("mongoose");
+mongoose.set("strictQuery", false);
+const Book = require("./models/book");
+const Author = require("./models/author");
+const { GraphQLError } = require("graphql");
 
-const mongoose = require('mongoose')
-mongoose.set('strictQuery', false)
-const Book = require('./models/book')
-const Author = require('./models/author')
+require("dotenv").config();
 
-require('dotenv').config()
+const MONGODB_URI = process.env.MONGODB_URI;
 
-const MONGODB_URI = process.env.MONGODB_URI
+console.log("connecting to", MONGODB_URI);
 
-console.log('connecting to', MONGODB_URI)
-
-mongoose.connect(MONGODB_URI)
+mongoose
+  .connect(MONGODB_URI)
   .then(() => {
-    console.log('connected to MongoDB')
+    console.log("connected to MongoDB");
   })
   .catch((error) => {
-    console.log('error connection to MongoDB:', error.message)
-  })
+    console.log("error connection to MongoDB:", error.message);
+  });
 
 const typeDefs = `
 type Book {
@@ -62,52 +62,95 @@ const resolvers = {
   Query: {
     bookCount: async () => Book.collection.countDocuments(),
     authorCount: async () => Author.collection.countDocuments(),
-    allBooks: async () => Book.find({}),
+    allBooks: async (root, args) => {
+      const { author, genre } = args;
+
+      const query = {};
+
+      if (author) {
+        const authorDoc = await Author.findOne({ name: author });
+        if (authorDoc) {
+          query.author = authorDoc._id;
+        } else {
+          return [];
+        }
+      }
+
+      if (genre) {
+        query.genres = genre;
+      }
+
+      return await Book.find(query).populate("author");
+    },
     allAuthors: async () => Author.find({}),
   },
   Author: {
-    bookCount: (root) => {
-      return books.filter((book) => book.author === root.name).length;
+    bookCount: async (root) => {
+      const count = await Book.countDocuments({ author: root._id });
+      return count;
     },
-    
   },
+
   Mutation: {
     addBook: async (root, args) => {
       try {
         let author = await Author.findOne({ name: args.author });
-    
+
         if (!author) {
           author = new Author({ name: args.author });
           await author.save();
         }
-    
+
         const book = new Book({
           ...args,
-          author: author._id, 
+          author: author._id,
         });
 
-        await book.save()
-    
-        return await book.populate('author');
+        await book.save();
+
+        return await book.populate("author");
       } catch (error) {
-        throw new Error(`Failed to add book: ${error.message}`);
+        throw new GraphQLError("Saving book failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args,
+            error,
+          },
+        });
       }
     },
-    editAuthor: (root, args) => {
+
+    editAuthor: async (root, args) => {
       const { name, setBornTo } = args;
-    
-      let existingAuthor = authors.find(a => a.name === name);
-    
-      if (!existingAuthor) {
-        return null;
+
+      try {
+        let existingAuthor = await Author.findOne({ name });
+
+        if (!existingAuthor) {
+          throw new GraphQLError(`Author with name "${name}" not found.`, {
+            extensions: {
+              code: "NOT_FOUND",
+              invalidArgs: args,
+            },
+          });
+        }
+
+        existingAuthor.born = setBornTo;
+
+        await existingAuthor.save();
+
+        return existingAuthor;
+      } catch (error) {
+        throw new GraphQLError("Saving author failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args,
+            error,
+          },
+        });
       }
-    
-      existingAuthor = { ...existingAuthor, born: setBornTo };
-      authors = authors.map(a => (a.name === name ? existingAuthor : a));
-    
-      return existingAuthor;
-    }
-  }
+    },
+  },
 };
 
 const server = new ApolloServer({
