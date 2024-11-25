@@ -145,6 +145,7 @@ const resolvers = {
         await book.save();
     
         return await book.populate("author");
+
       } catch (error) {
         throw new GraphQLError("Saving book failed", {
           extensions: {

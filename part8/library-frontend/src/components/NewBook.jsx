@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/client'
 import {ALL_AUTHORS, ALL_BOOKS, ADD_BOOK} from '../queries'
 
 
-const NewBook = (props) => {
+const NewBook = ({show, setErrorMessage } ) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
@@ -12,7 +12,8 @@ const NewBook = (props) => {
 
   const [addBook] = useMutation(ADD_BOOK, {
     onError: (error) => {
-      console.error(error.graphQLErrors[0]?.message || 'An error occurred')
+      setErrorMessage(error.graphQLErrors[0]?.message || 'An error occurred')
+      setTimeout(() => setErrorMessage(""), 5000); 
     },
     onCompleted: () => {
       console.log('Book added successfully!')
@@ -23,7 +24,7 @@ const NewBook = (props) => {
     ],
   })
 
-  if (!props.show) {
+  if (!show) {
     return null
   }
 
@@ -47,7 +48,9 @@ const NewBook = (props) => {
       setGenres([])
       setGenre('')
     } catch (error) {
-      console.error('Failed to add book:', error)
+      setErrorMessage('Failed to add book:', error)
+      setTimeout(() => setErrorMessage(""), 5000); 
+
     }
   }
 

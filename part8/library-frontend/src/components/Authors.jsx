@@ -2,14 +2,15 @@ import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries'
 
-const Authors = (props) => {
+const Authors = ({ token, show, setErrorMessage }) => {
   const [selectedAuthor, setSelectedAuthor] = useState('')
   const [birthYear, setBirthYear] = useState('')
   const { loading, data } = useQuery(ALL_AUTHORS)
 
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
     onError: (error) => {
-      console.error(error.graphQLErrors[0]?.message || 'An error occurred')
+      setErrorMessage(error.graphQLErrors[0]?.message || 'An error occurred')
+      setTimeout(() => setErrorMessage(""), 5000); 
     },
     onCompleted: () => {
       console.log('Author updated successfully!')
@@ -17,7 +18,7 @@ const Authors = (props) => {
     refetchQueries: [{ query: ALL_AUTHORS }],
   })
 
-  if (!props.show) {
+  if (!show) {
     return null
   }
 
@@ -56,35 +57,39 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <h2>Set Birthyear</h2>
-      <form onSubmit={submit}>
-        <div>
-          <label>
-            Author:
-            <select
-              value={selectedAuthor}
-              onChange={({ target }) => setSelectedAuthor(target.value)}
-            >
-              <option value="">Select author</option>
-              {data.allAuthors.map((a) => (
-                <option key={a.name} value={a.name}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div>
-          Birthyear:
-          <input
-            type="number"
-            value={birthYear}
-            onChange={({ target }) => setBirthYear(target.value)}
-          />
-        </div>
-        <button type="submit">Update Author</button>
-      </form>
+      {token && (
+        <>
+          <h2>Set Birthyear</h2>
+          <form onSubmit={submit}>
+            <div>
+              <label>
+                Author:
+                <select
+                  value={selectedAuthor}
+                  onChange={({ target }) => setSelectedAuthor(target.value)}
+                >
+                  <option value="">Select author</option>
+                  {data.allAuthors.map((a) => (
+                    <option key={a.name} value={a.name}>
+                      {a.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div>
+              Birthyear:
+              <input
+                type="number"
+                value={birthYear}
+                onChange={({ target }) => setBirthYear(target.value)}
+              />
+            </div>
+            <button type="submit">Update Author</button>
+          </form>
+        </>
+      )}
     </div>
-  )
-}
+  );
+};
 export default Authors
