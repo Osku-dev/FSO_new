@@ -100,7 +100,7 @@ const resolvers = {
       }
 
       if (genre) {
-        query.genres = genre;
+        query.genres = { $regex: new RegExp(`^${genre}$`, 'i') };
       }
 
       return await Book.find(query).populate("author");

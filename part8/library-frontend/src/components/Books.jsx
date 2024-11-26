@@ -1,20 +1,43 @@
-import { useQuery } from '@apollo/client'
-import { ALL_BOOKS } from '../queries'
+import { useQuery } from '@apollo/client';
+import { ALL_BOOKS } from '../queries';
+import { useState } from 'react';
 
-const Books = ({show}) => {
-  const result = useQuery(ALL_BOOKS)
-  
+const Books = ({ show }) => {
+  const [selectedGenre, setSelectedGenre] = useState(null);
+
+  const { loading, data, error } = useQuery(ALL_BOOKS, {
+    variables: { genre: selectedGenre },
+  });
+
   if (!show) {
-    return null
+    return null;
   }
 
-  if (result.loading) {
-    return <div>loading...</div>
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
-  if (!result.data || !result.data.allBooks) {
-    return <div>No books found</div>
+  if (error) {
+    return <div>Error fetching books</div>;
   }
+
+  if (!data || !data.allBooks) {
+    return <div>No books found</div>;
+  }
+
+  const genres = data.allBooks
+    .map((book) => book.genres)
+    .flat()
+    .map((genre) => genre.toLowerCase())
+    .filter((genre, index, self) => self.indexOf(genre) === index);
+
+  const displayedGenres = selectedGenre
+    ? [selectedGenre] 
+    : genres;         
+
+  const handleGenreClick = (genre) => {
+    setSelectedGenre(genre.toLowerCase());
+  };
 
   return (
     <div>
@@ -27,17 +50,31 @@ const Books = ({show}) => {
             <th>Author</th>
             <th>Published</th>
           </tr>
-          {result.data.allBooks.map((book) => (
-            <tr key={book.title}>
+          {data.allBooks.map((book) => (
+            <tr key={book.id}>
               <td>{book.title}</td>
-              <td>{book.author ? book.author.name : 'Unknown'}</td>
+              <td>{book.author.name}</td>
               <td>{book.published}</td>
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
-  )
-}
 
-export default Books
+      <h3>Filter by genre</h3>
+      <div>
+        {displayedGenres.map((genre) => (
+          <button
+            key={genre}
+            onClick={() => handleGenreClick(genre)}
+            disabled={selectedGenre === genre}
+          >
+            {genre}
+          </button>
+        ))}
+        <button onClick={() => setSelectedGenre(null)}>Show all</button>
+      </div>
+    </div>
+  );
+};
+
+export default Books;
