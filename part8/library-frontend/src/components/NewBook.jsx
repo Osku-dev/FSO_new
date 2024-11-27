@@ -1,37 +1,46 @@
-import { useState } from 'react'
-import { useMutation } from '@apollo/client'
-import {ALL_AUTHORS, ALL_BOOKS, ADD_BOOK} from '../queries'
+import { useState } from "react";
+import { useMutation } from "@apollo/client";
+import { ALL_AUTHORS, ALL_BOOKS, ADD_BOOK } from "../queries";
 
-
-const NewBook = ({show, setErrorMessage } ) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [published, setPublished] = useState('')
-  const [genre, setGenre] = useState('')
-  const [genres, setGenres] = useState([])
+const NewBook = ({ show, setErrorMessage }) => {
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [published, setPublished] = useState("");
+  const [genre, setGenre] = useState("");
+  const [genres, setGenres] = useState([]);
 
   const [addBook] = useMutation(ADD_BOOK, {
     onError: (error) => {
-      setErrorMessage(error.graphQLErrors[0]?.message || 'An error occurred')
-      setTimeout(() => setErrorMessage(""), 5000); 
+      console.log("Error occurred during mutation: ", error);
+      setErrorMessage(error.graphQLErrors[0]?.message || "An error occurred");
+      setTimeout(() => setErrorMessage(""), 5000);
     },
+
+    refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS , variables: { genre: null } }],
+    awaitRefetchQueries: true,
+
+    update: (cache, response) => {
+
+      cache.updateQuery({ query: ALL_BOOKS , variables: { genre: null } }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(response.data.addBook),
+        };
+      });
+    },
+
     onCompleted: () => {
-      console.log('Book added successfully!')
+      console.log("Book added successfully!");
     },
-    refetchQueries: [
-      { query: ALL_AUTHORS }, 
-      { query: ALL_BOOKS },   
-    ],
-  })
+  });
 
   if (!show) {
-    return null
+    return null;
   }
 
   const submit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    const publishedYear = parseInt(published)
+    const publishedYear = parseInt(published);
     try {
       await addBook({
         variables: {
@@ -40,26 +49,25 @@ const NewBook = ({show, setErrorMessage } ) => {
           published: publishedYear,
           genres,
         },
-      })
+      });
 
-      setTitle('')
-      setAuthor('')
-      setPublished('')
-      setGenres([])
-      setGenre('')
+      setTitle("");
+      setAuthor("");
+      setPublished("");
+      setGenres([]);
+      setGenre("");
     } catch (error) {
-      setErrorMessage('Failed to add book:', error)
-      setTimeout(() => setErrorMessage(""), 5000); 
-
+      setErrorMessage("Failed to add book:", error);
+      setTimeout(() => setErrorMessage(""), 5000);
     }
-  }
+  };
 
   const addGenre = () => {
     if (genre.trim()) {
-      setGenres(genres.concat(genre.trim()))
-      setGenre('')
+      setGenres(genres.concat(genre.trim()));
+      setGenre("");
     }
-  }
+  };
 
   return (
     <div>
@@ -95,11 +103,11 @@ const NewBook = ({show, setErrorMessage } ) => {
             add genre
           </button>
         </div>
-        <div>genres: {genres.join(' ')}</div>
+        <div>genres: {genres.join(" ")}</div>
         <button type="submit">create book</button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default NewBook
+export default NewBook;

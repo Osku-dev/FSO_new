@@ -8,6 +8,7 @@ const Authors = ({ token, show, setErrorMessage }) => {
   const { loading, data } = useQuery(ALL_AUTHORS)
 
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
+    fetchPolicy: 'cache-first',
     onError: (error) => {
       setErrorMessage(error.graphQLErrors[0]?.message || 'An error occurred')
       setTimeout(() => setErrorMessage(""), 5000); 

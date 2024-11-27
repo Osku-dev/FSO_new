@@ -7,6 +7,7 @@ const Recommendations = ({ show }) => {
 
   const { loading: booksLoading, data: booksData, error: booksError } = useQuery(ALL_BOOKS, {
     variables: { genre: favoriteGenre || null },
+    fetchPolicy: 'cache-first',
     skip: !favoriteGenre, 
   });
 

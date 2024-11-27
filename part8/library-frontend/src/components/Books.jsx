@@ -7,6 +7,7 @@ const Books = ({ show }) => {
 
   const { loading, data, error } = useQuery(ALL_BOOKS, {
     variables: { genre: selectedGenre },
+    fetchPolicy: 'cache-first',
   });
 
   if (!show) {
