@@ -119,16 +119,10 @@ const resolvers = {
 
       return await Book.find(query).populate("author");
     },
-    allAuthors: async () => Author.find({}),
+    allAuthors: async () =>  Author.find({}),
 
     me: (root, args, context) => {
       return context.currentUser;
-    },
-  },
-  Author: {
-    bookCount: async (root) => {
-      const count = await Book.countDocuments({ author: root._id });
-      return count;
     },
   },
 
@@ -141,28 +135,33 @@ const resolvers = {
           },
         });
       }
-
+    
       try {
         let author = await Author.findOne({ name: args.author });
-
+    
         if (!author) {
-          author = new Author({ name: args.author });
+          author = new Author({ name: args.author, bookCount: 1 });
           await author.save();
+        } else {
+          
+          author.bookCount += 1;
+          await author.save(); 
         }
-
+    
+        
         const book = new Book({
           ...args,
           author: author._id,
         });
-
+    
         await book.save();
-
+    
         const populatedBook = await book.populate("author");
-
+    
         pubsub.publish("BOOK_ADDED", { bookAdded: populatedBook });
-
+    
         return populatedBook;
-        
+    
       } catch (error) {
         throw new GraphQLError("Saving book failed", {
           extensions: {
