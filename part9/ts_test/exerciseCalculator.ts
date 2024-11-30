@@ -8,7 +8,7 @@ interface ExerciseResult {
     average: number;
   }
   
-  function calculateExercises(dailyHours: number[], target: number): ExerciseResult {
+  const calculateExercises =(dailyHours: number[], target: number): ExerciseResult => {
     if (!dailyHours || dailyHours.length === 0 || target < 0) {
       throw new Error("Invalid input. Ensure daily hours array and a positive target are provided.");
     }
