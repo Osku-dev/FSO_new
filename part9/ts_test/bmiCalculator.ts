@@ -35,11 +35,39 @@ const bmiCalculator = (weight: number, height: number): string => {
     return `Your BMI is ${bmi.toFixed(2)} (${result}).`;
   }
   
+  interface BmiInput {
+    weight: number;
+    height: number;
+  }
+  
+  const parseArguments = (args: string[]): BmiInput => {
+    if (args.length < 4) {
+      throw new Error('Not enough arguments. Provide weight (kg) and height (cm).');
+    }
+    if (args.length > 4) {
+      throw new Error('Too many arguments. Provide only weight (kg) and height (cm).');
+    }
+  
+    const weight = Number(args[2]);
+    const height = Number(args[3]);
+  
+    if (isNaN(weight) || isNaN(height)) {
+      throw new Error('Provided values must be numbers.');
+    }
+  
+    if (weight <= 0 || height <= 0) {
+      throw new Error('Weight and height must be positive numbers.');
+    }
+  
+    return {
+      weight,
+      height,
+    };
+  };
   
   try {
-    console.log(bmiCalculator(70, 170)); // Normal weight
-    console.log(bmiCalculator(90, 170)); // Obesity Class I
-    console.log(bmiCalculator(50, 170)); // Underweight
+    const { weight, height } = parseArguments(process.argv);
+    console.log(bmiCalculator(weight, height));
   } catch (error: unknown) {
     let errorMessage = 'Something went wrong: '
     if (error instanceof Error) {
