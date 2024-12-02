@@ -65,6 +65,7 @@ const bmiCalculator = (weight: number, height: number): string => {
     };
   };
   
+  if (require.main === module) {
   try {
     const { weight, height } = parseArguments(process.argv);
     console.log(bmiCalculator(weight, height));
@@ -75,4 +76,7 @@ const bmiCalculator = (weight: number, height: number): string => {
     }
     console.log(errorMessage);
   }
+}
+
+export { bmiCalculator };
   
