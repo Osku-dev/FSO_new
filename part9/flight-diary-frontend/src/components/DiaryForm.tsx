@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { NewDiaryEntry, Weather, Visibility, DiaryEntry } from '../types';
+import { useState } from "react";
+import { NewDiaryEntry, Weather, Visibility, DiaryEntry } from "../types";
 import { createDiary } from "../services/diaryService";
-import axios from 'axios';
+import axios from "axios";
 
 interface DiaryFormProps {
   addDiary: (newDiary: DiaryEntry) => void;
 }
 
-
-
 const DiaryForm = ({ addDiary }: DiaryFormProps) => {
-  const [date, setDate] = useState<string>('');
-  const [weather, setWeather] = useState<Weather>('sunny' as Weather);
-  const [visibility, setVisibility] = useState<Visibility>('great' as Visibility);
-  const [comment, setComment] = useState<string>('');
+  const [date, setDate] = useState<string>("");
+  const [weather, setWeather] = useState<Weather>("sunny" as Weather);
+  const [visibility, setVisibility] = useState<Visibility>(
+    "great" as Visibility
+  );
+  const [comment, setComment] = useState<string>("");
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -22,22 +22,22 @@ const DiaryForm = ({ addDiary }: DiaryFormProps) => {
     try {
       const createdDiary = await createDiary(newDiaryEntry);
       addDiary(createdDiary);
-      setDate('');
-      setWeather('sunny' as Weather);
-      setVisibility('great' as Visibility);
-      setComment('');
+      setDate("");
+      setWeather("sunny" as Weather);
+      setVisibility("great" as Visibility);
+      setComment("");
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        
-        const fullMessage = error.response?.data || 'Failed to save diary entry to the backend.';
-        const errorMessage = fullMessage.includes('Error:')
-          ? fullMessage.split('Error:')[1].trim()
+        const fullMessage =
+          error.response?.data || "Failed to save diary entry to the backend.";
+        const errorMessage = fullMessage.includes("Error:")
+          ? fullMessage.split("Error:")[1].trim()
           : fullMessage;
-    
+
         alert(`Error: ${errorMessage}`);
       } else {
-        console.error('An unexpected error occurred:', error);
-        alert('An unexpected error occurred. Please try again later.');
+        console.error("An unexpected error occurred:", error);
+        alert("An unexpected error occurred. Please try again later.");
       }
     }
   };
@@ -59,25 +59,27 @@ const DiaryForm = ({ addDiary }: DiaryFormProps) => {
         <div>
           <label>Weather</label>
           <div>
-            {(['sunny', 'cloudy', 'rainy', 'stormy'] as Weather[]).map((option) => (
-              <label key={option}>
-                <input
-                  type="radio"
-                  name="weather"
-                  value={option}
-                  checked={weather === option}
-                  onChange={() => setWeather(option)}
-                />
-                {option.charAt(0).toUpperCase() + option.slice(1)}
-              </label>
-            ))}
+            {(["sunny", "cloudy", "rainy", "stormy"] as Weather[]).map(
+              (option) => (
+                <label key={option}>
+                  <input
+                    type="radio"
+                    name="weather"
+                    value={option}
+                    checked={weather === option}
+                    onChange={() => setWeather(option)}
+                  />
+                  {option.charAt(0).toUpperCase() + option.slice(1)}
+                </label>
+              )
+            )}
           </div>
         </div>
 
         <div>
           <label>Visibility</label>
           <div>
-            {(['great', 'good', 'ok', 'poor'] as Visibility[]).map((option) => (
+            {(["great", "good", "ok", "poor"] as Visibility[]).map((option) => (
               <label key={option}>
                 <input
                   type="radio"
