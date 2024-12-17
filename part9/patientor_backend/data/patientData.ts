@@ -50,6 +50,7 @@ const patientEntries: PatientEntry[] = data.map((obj) => {
   const patientEntry: PatientEntry = {
     ...object,
     id: obj.id,
+    entries:[]
   };
 
   return patientEntry;
