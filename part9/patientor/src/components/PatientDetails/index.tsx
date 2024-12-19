@@ -47,6 +47,21 @@ const PatientDetails = () => {
       <p>
         <strong>Occupation:</strong> {patient.occupation}
       </p>
+      <h2>entries</h2>
+      <ul>
+      {patient.entries.map((entry) => (
+        <li key={entry.id}>
+          <p>{entry.date} {entry.description}</p>
+          {entry.diagnosisCodes && (
+            <ul>
+              {entry.diagnosisCodes.map((code, index) => (
+                <li key={index}>{code}</li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
     </div>
   );
 };
