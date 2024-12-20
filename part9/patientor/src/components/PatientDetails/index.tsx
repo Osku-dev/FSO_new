@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Diagnosis, Patient } from "../../types";
+import { Diagnosis, Entry, Patient } from "../../types";
 import { getPatient, getDiagnoses } from "../../services/patients";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople"; 
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+import WorkIcon from "@mui/icons-material/Work";
+import EntryDetails from "./EntryDetails";
 
 const PatientDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,6 +49,19 @@ const PatientDetails = () => {
     }
   };
 
+  const getEntryIcon = (type: Entry["type"]) => {
+    switch (type) {
+      case "HealthCheck":
+        return <FavoriteIcon style={{ color: "green" }} />;
+      case "Hospital":
+        return <LocalHospitalIcon style={{ color: "red" }} />;
+      case "OccupationalHealthcare":
+        return <WorkIcon style={{ color: "blue" }} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div>
       <h1>{patient.name} {getGenderIcon(patient.gender)}</h1>
@@ -57,8 +74,19 @@ const PatientDetails = () => {
       <h2>entries</h2>
       <ul>
   {patient.entries.map((entry) => (
-    <li key={entry.id}>
-      <p>{entry.date} {entry.description}</p>
+    <li
+      key={entry.id}
+      style={{
+        border: '1px solid #ccc',
+        padding: '10px',       
+        margin: '10px 0',           
+        borderRadius: '8px',        
+        backgroundColor: '#f9f9f9'  
+      }}
+    >
+      <p>
+        {entry.date} {getEntryIcon(entry.type)} {entry.description}
+      </p>
       {entry.diagnosisCodes && (
         <ul>
           {entry.diagnosisCodes.map((code) => {
@@ -71,6 +99,7 @@ const PatientDetails = () => {
           })}
         </ul>
       )}
+      <EntryDetails entry={entry} />
     </li>
   ))}
 </ul>
