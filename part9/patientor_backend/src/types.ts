@@ -40,9 +40,6 @@ export type Entry =
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
 
-export interface Params {
-  id: string;
-}
 
 export interface DiagnosisEntry {
     code: string;
@@ -65,5 +62,8 @@ export interface DiagnosisEntry {
   }
   export type NonSensitivePatientEntry = Omit<PatientEntry, 'ssn' | 'entries'>;
   export type NewPatientEntry = Omit<PatientEntry, 'id'>;
+
+  type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+  export type NewEntry = UnionOmit<Entry, 'id'>;
   
   
