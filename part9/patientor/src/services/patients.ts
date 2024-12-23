@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Diagnosis, Patient, PatientFormValues } from "../types";
+import { Diagnosis, Entry, NewEntry, Patient, PatientFormValues } from "../types";
 
 import { apiBaseUrl } from "../constants";
 
@@ -36,7 +36,25 @@ const create = async (object: PatientFormValues) => {
   return data;
 };
 
+export const createEntry = async (object: NewEntry, id: string) => {
+  try {
+    const { data } = await axios.post<Entry>(
+      `${apiBaseUrl}/patients/${id}/entries`,
+      object
+    );
+    return data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.data?.error) {
+      const zodErrors = error.response.data.error.map(
+        (issue: { message: string }) => issue.message
+      );
+      throw new Error(`Validation errors: ${zodErrors.join(", ")}`);
+    }
+    throw new Error("An unexpected error occurred.");
+  }
+};
+
 export default {
-  getAll, create
+  getAll, create,
 };
 

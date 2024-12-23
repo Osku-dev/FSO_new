@@ -4,12 +4,13 @@ import { Diagnosis, Entry, Patient } from "../../types";
 import { getPatient, getDiagnoses } from "../../services/patients";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
-import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople"; 
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import WorkIcon from "@mui/icons-material/Work";
 import EntryDetails from "./EntryDetails";
+import EntryFormSelector from "./EntryFormSelector";
 
 const PatientDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,7 +44,7 @@ const PatientDetails = () => {
       case "female":
         return <FemaleIcon style={{ color: "red" }} />;
       case "other":
-        return <EmojiPeopleIcon  style={{ color: "purple" }} />;
+        return <EmojiPeopleIcon style={{ color: "purple" }} />;
       default:
         return <HelpOutlineIcon style={{ color: "gray" }} />;
     }
@@ -62,47 +63,66 @@ const PatientDetails = () => {
     }
   };
 
+  const handleNewEntry = (entry: Entry) => {
+    setPatient((prevPatient) => {
+      if (!prevPatient) return prevPatient;
+      return {
+        ...prevPatient,
+        entries: [...prevPatient.entries, entry],
+      };
+    });
+  };
+
   return (
     <div>
-      <h1>{patient.name} {getGenderIcon(patient.gender)}</h1>
+      <h1>
+        {patient.name} {getGenderIcon(patient.gender)}
+      </h1>
       <p>
         <strong>SSN:</strong> {patient.ssn}
       </p>
       <p>
         <strong>Occupation:</strong> {patient.occupation}
       </p>
+
+      <EntryFormSelector
+        diagnoses={diagnoses}
+        patientId={patient.id}
+        onNewEntry={handleNewEntry}
+      />
       <h2>entries</h2>
       <ul>
-  {patient.entries.map((entry) => (
-    <li
-      key={entry.id}
-      style={{
-        border: '1px solid #ccc',
-        padding: '10px',       
-        margin: '10px 0',           
-        borderRadius: '8px',        
-        backgroundColor: '#f9f9f9'  
-      }}
-    >
-      <p>
-        {entry.date} {getEntryIcon(entry.type)} {entry.description}
-      </p>
-      {entry.diagnosisCodes && (
-        <ul>
-          {entry.diagnosisCodes.map((code) => {
-            const diagnosis = diagnoses.find((d) => d.code === code);
-            return (
-              <li key={code}>
-                <strong>{code}:</strong> {diagnosis ? diagnosis.name : "Unknown Diagnosis"}
-              </li>
-            );
-          })}
-        </ul>
-      )}
-      <EntryDetails entry={entry} />
-    </li>
-  ))}
-</ul>
+        {patient.entries.map((entry) => (
+          <li
+            key={entry.id}
+            style={{
+              border: "1px solid #ccc",
+              padding: "10px",
+              margin: "10px 0",
+              borderRadius: "8px",
+              backgroundColor: "#f9f9f9",
+            }}
+          >
+            <p>
+              {entry.date} {getEntryIcon(entry.type)} {entry.description}
+            </p>
+            {entry.diagnosisCodes && (
+              <ul>
+                {entry.diagnosisCodes.map((code) => {
+                  const diagnosis = diagnoses.find((d) => d.code === code);
+                  return (
+                    <li key={code}>
+                      <strong>{code}:</strong>{" "}
+                      {diagnosis ? diagnosis.name : "Unknown Diagnosis"}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            <EntryDetails entry={entry} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
