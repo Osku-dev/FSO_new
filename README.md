@@ -7,7 +7,7 @@ This repository contains the code I’m developing for the **Full Stack Open** c
 
 - [**Part3-Persons-Backend Repository**](https://github.com/Osku-dev/part3-persons-backend): Part 3 of the Full Stack Open course.
 
-- - [**Part10-reactNative Repository**](https://github.com/Osku-dev/part10-reactNative): Part 10 of the Full Stack Open course.
+- [**Part10-reactNative Repository**](https://github.com/Osku-dev/part10-reactNative): Part 10 of the Full Stack Open course.
 
 
 <h1>**Note on Project State and Techniques (IMPORTANT):** </h1>
