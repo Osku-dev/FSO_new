@@ -9,6 +9,13 @@ This repository contains the code I’m developing for the **Full Stack Open** c
 
 - [**Part10-reactNative Repository**](https://github.com/Osku-dev/part10-reactNative): Part 10 of the Full Stack Open course.
 
+- [**Part11-CI-CD Repository**](https://github.com/Osku-dev/part11-CI-CD): Part 11 of the Full Stack Open course.
+
+- [**Part12-Containers-Applications Repository**](https://github.com/Osku-dev/part12-containers-applications): Part 12 of the Full Stack Open course.
+
+- [**Part13-Relational-Databases Repository**](https://github.com/Osku-dev/part13-relational-databases): Part 13 of the Full Stack Open course.
+
+
 
 <h1>**Note on Project State and Techniques (IMPORTANT):** </h1>
 
