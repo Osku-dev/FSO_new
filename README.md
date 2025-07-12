@@ -5,7 +5,16 @@ This repository contains the code I’m developing for the **Full Stack Open** c
 ### Related Repositories:
 - [**React2 Repository**](https://github.com/Osku-dev/react2): Contains similar code from the same course, which I started two years ago before transitioning into a full-time software engineering role. Although I paused my progress on that repository, I’ve now resumed the course and am actively working on completing it.
 
-- [**Part3-Persons-Backend Repository**](https://github.com/Osku-dev/part3-persons-backend): This repository includes backend code that also relates to the Full Stack Open course.
+- [**Part3-Persons-Backend Repository**](https://github.com/Osku-dev/part3-persons-backend): Part 3 of the Full Stack Open course.
+
+- [**Part10-reactNative Repository**](https://github.com/Osku-dev/part10-reactNative): Part 10 of the Full Stack Open course.
+
+- [**Part11-CI-CD Repository**](https://github.com/Osku-dev/part11-CI-CD): Part 11 of the Full Stack Open course.
+
+- [**Part12-Containers-Applications Repository**](https://github.com/Osku-dev/part12-containers-applications): Part 12 of the Full Stack Open course.
+
+- [**Part13-Relational-Databases Repository**](https://github.com/Osku-dev/part13-relational-databases): Part 13 of the Full Stack Open course.
+
 
 
 <h1>**Note on Project State and Techniques (IMPORTANT):** </h1>
