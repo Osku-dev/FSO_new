@@ -1,3 +1,5 @@
+// setting classnames for css styles
+
 export const SuccessNotification = ({ message }) => {
     if (message === null) {
       return null

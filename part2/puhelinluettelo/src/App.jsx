@@ -16,7 +16,8 @@ const App = () => {
       setPersons(initialPersons);
     });
   }, []);
-
+  
+// create a new person or update an existing one
   const addNote = (event) => {
     event.preventDefault();
 

@@ -67,6 +67,7 @@ const App = () => {
       });
   }, []);
 
+  // Fetch weather data when a single country is selected
   useEffect(() => {
     if (selectedCountry) {
       axios
@@ -107,7 +108,8 @@ const App = () => {
     setWeather(null); // Reset weather data when a new country is selected
   };
 
-  
+  // render countries if less than 10, otherwise show a message
+  // if exactly one country, show details
   return (
     <div>
       <form>
