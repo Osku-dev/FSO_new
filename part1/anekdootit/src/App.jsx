@@ -29,7 +29,7 @@ const App = () => {
   ];
 
   const handleNextClick = () => {
-    setSelected(Math.floor(Math.random() * anecdotes.length));
+    setSelected(Math.floor(Math.random() * anecdotes.length)); // Select a random anecdote
   };
 
   const handleVoteClick = () => {
@@ -39,7 +39,7 @@ const App = () => {
   };
 
   const [selected, setSelected] = useState(0);
-  const [points, setPoints] = useState(new Array(anecdotes.length).fill(0));
+  const [points, setPoints] = useState(new Array(anecdotes.length).fill(0)); // Initialize points array with zeros
 
   return (
     <div>
