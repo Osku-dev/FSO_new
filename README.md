@@ -3,7 +3,7 @@
 This repository contains the code I’m developing for the **Full Stack Open** course, which offers a comprehensive introduction to modern web development using JavaScript, React, Node.js, and related technologies.
 
 ### Related Repositories:
-- [**React2 Repository**](https://github.com/Osku-dev/react2): Contains similar code from the same course, which I started two years ago before transitioning into a full-time software engineering role. Although I paused my progress on that repository, I’ve now resumed the course and am actively working on completing it.
+- [**React2 Repository**](https://github.com/Osku-dev/react2): Contains similar code from the same course, which I started two years ago before transitioning into a full-time software engineering role. Although I paused my progress on that repository, I decided to restart the course from scratch and have now completed it.
 
 - [**Part3-Persons-Backend Repository**](https://github.com/Osku-dev/part3-persons-backend): Part 3 of the Full Stack Open course.
 
